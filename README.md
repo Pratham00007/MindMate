@@ -133,7 +133,4 @@ Contributions, suggestions, and feedback are welcome! Open an issue or submit a 
 
 > *"Mental wellness is not a luxury — it's a necessity."* 💚
 
-```
-
----
 
