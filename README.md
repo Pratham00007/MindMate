@@ -1,6 +1,5 @@
 
 
-````markdown
 # 🌿 MindEase - A Flutter Mental Wellness App
 
 **MindEase** is a mental wellness app built with Flutter, designed specifically for Indian youth. It combines modern UI, empathetic AI, and community support to address everyday mental health challenges with culturally sensitive solutions.
@@ -130,11 +129,7 @@ Contributions, suggestions, and feedback are welcome! Open an issue or submit a 
 
 ---
 
-## 📜 License
 
-This project is licensed under the [MIT License](LICENSE).
-
----
 
 > *"Mental wellness is not a luxury — it's a necessity."* 💚
 
