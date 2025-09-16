@@ -1,8 +1,8 @@
 
 
-# 🌿 MindEase - A Flutter Mental Wellness App
+# 🌿 GCGrid - A Flutter Mental Wellness App
 
-**MindEase** is a mental wellness app built with Flutter, designed specifically for Indian youth. It combines modern UI, empathetic AI, and community support to address everyday mental health challenges with culturally sensitive solutions.
+**GCGrid** is a mental wellness app built with Flutter, designed specifically for Indian youth. It combines modern UI, empathetic AI, and community support to address everyday mental health challenges with culturally sensitive solutions.
 
 ---
 
@@ -125,7 +125,7 @@ MindEase goes beyond basic wellness tools:
 
 ## 📧 Feedback & Contributions
 
-Contributions, suggestions, and feedback are welcome! Open an issue or submit a pull request to help improve MindEase.
+Contributions, suggestions, and feedback are welcome! Open an issue or submit a pull request to help improve GCGrid.
 
 ---
 
