@@ -1,19 +1,3 @@
-// pubspec.yaml dependencies needed:
-/*
-dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.2
-  google_fonts: ^6.1.0
-  animated_bottom_navigation_bar: ^1.3.3
-  lottie: ^2.7.0
-  flutter_animate: ^4.2.0+1
-  http: ^1.1.0
-  shared_preferences: ^2.2.2
-  intl: ^0.18.1
-  emoji_picker_flutter: ^1.6.3
-*/
-
 import 'package:flutter/material.dart';
 import 'package:gcgrid/AppointmentPage.dart';
 import 'package:gcgrid/Chat_Screen.dart';
