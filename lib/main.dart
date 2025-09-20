@@ -7,6 +7,8 @@ import 'package:gcgrid/homepage.dart';
 import 'package:google_fonts/google_fonts.dart' as gfonts;
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:async';
 
 void main() {
   runApp(const GGGridApp());
@@ -25,7 +27,89 @@ class GGGridApp extends StatelessWidget {
         fontFamily: gfonts.GoogleFonts.poppins().fontFamily,
         scaffoldBackgroundColor: const Color(0xFFF8FFFE),
       ),
-      home: const MainScreen(),
+      home: const ConnectionChecker(), // ✅ Wrapped entry
+    );
+  }
+}
+
+// ✅ Internet checker wrapper
+class ConnectionChecker extends StatefulWidget {
+  const ConnectionChecker({super.key});
+
+  @override
+  State<ConnectionChecker> createState() => _ConnectionCheckerState();
+}
+
+class _ConnectionCheckerState extends State<ConnectionChecker> {
+  bool _isConnected = true;
+  late StreamSubscription _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkConnection();
+
+    // ✅ Listen for connectivity changes (handles List<ConnectivityResult>)
+    _subscription = Connectivity().onConnectivityChanged.listen((results) {
+      if (results.isNotEmpty) {
+        _updateConnectionStatus(results.first);
+      } else {
+        _updateConnectionStatus(ConnectivityResult.none);
+      }
+    });
+  }
+
+  Future<void> _checkConnection() async {
+    final result = await Connectivity().checkConnectivity();
+    if (result.isNotEmpty) {
+      _updateConnectionStatus(result.first);
+    } else {
+      _updateConnectionStatus(ConnectivityResult.none);
+    }
+  }
+
+  void _updateConnectionStatus(ConnectivityResult result) {
+    setState(() {
+      _isConnected = result != ConnectivityResult.none;
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isConnected) {
+      return const MainScreen(); // ✅ load your app
+    } else {
+      return const NoInternetScreen(); // ✅ show loading when offline
+    }
+  }
+}
+
+// ✅ Offline screen
+class NoInternetScreen extends StatelessWidget {
+  const NoInternetScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(color: Colors.teal),
+            const SizedBox(height: 20),
+            Text(
+              "Waiting for Internet Connection...",
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -57,14 +141,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _fabAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _borderRadiusAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
+    _fabAnimationController =
+        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+    _borderRadiusAnimationController =
+        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+
     fabCurve = CurvedAnimation(
       parent: _fabAnimationController,
       curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
@@ -75,24 +156,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     );
 
     fabAnimation = Tween<double>(begin: 0, end: 1).animate(fabCurve);
-    borderRadiusAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(borderRadiusCurve);
+    borderRadiusAnimation = Tween<double>(begin: 0, end: 1).animate(borderRadiusCurve);
 
-    _hideBottomBarAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
+    _hideBottomBarAnimationController =
+        AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
 
-    Future.delayed(
-      const Duration(seconds: 1),
-      () => _fabAnimationController.forward(),
-    );
-    Future.delayed(
-      const Duration(seconds: 1),
-      () => _borderRadiusAnimationController.forward(),
-    );
+    Future.delayed(const Duration(seconds: 1), () => _fabAnimationController.forward());
+    Future.delayed(const Duration(seconds: 1), () => _borderRadiusAnimationController.forward());
   }
 
   @override
@@ -105,21 +175,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
           Navigator.push(
             context,
             PageRouteBuilder(
-              pageBuilder:
-                  (context, animation, secondaryAnimation) =>
-                      const ChatScreen(),
-              transitionsBuilder: (
-                context,
-                animation,
-                secondaryAnimation,
-                child,
-              ) {
+              pageBuilder: (context, animation, secondaryAnimation) => const ChatScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 return SlideTransition(
                   position: animation.drive(
-                    Tween(
-                      begin: const Offset(0.0, 1.0),
-                      end: Offset.zero,
-                    ).chain(CurveTween(curve: Curves.easeOut)),
+                    Tween(begin: const Offset(0.0, 1.0), end: Offset.zero)
+                        .chain(CurveTween(curve: Curves.easeOut)),
                   ),
                   child: child,
                 );
@@ -174,5 +235,3 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 }
-
-
