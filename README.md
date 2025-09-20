@@ -48,6 +48,14 @@
 - Access to **session history** and saved content
 
 ---
+## Screen Recording
+
+
+
+https://github.com/user-attachments/assets/6c09f887-4ee9-41b6-9663-fa88e9acbfc9
+
+
+---
 
 ## 🎨 UI/UX Highlights
 
