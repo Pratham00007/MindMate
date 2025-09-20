@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'gemini_service.dart';
 
+import 'package:flutter_markdown/flutter_markdown.dart';
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -180,52 +181,67 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: message.isUser ? const Color(0xFF00BFA5) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              message.text,
-              style: gfonts.GoogleFonts.poppins(
-                color: message.isUser ? Colors.white : const Color(0xFF2E3A47),
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              DateFormat('HH:mm').format(message.timestamp),
-              style: gfonts.GoogleFonts.poppins(
-                color: message.isUser
-                    ? Colors.white.withOpacity(0.7)
-                    : Colors.grey[500],
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ).animate().fadeIn(duration: 300.ms).slideX();
-  }
+Widget _buildMessageBubble(ChatMessage message) {
+  final isUser = message.isUser;
 
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 4),
+    alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+    child: Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.75,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: isUser ? const Color(0xFF00BFA5) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          isUser
+              ? Text(
+                  message.text,
+                  style: gfonts.GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                )
+              : MarkdownBody(
+                  data: message.text,
+                  styleSheet: MarkdownStyleSheet(
+                    p: gfonts.GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: const Color(0xFF2E3A47),
+                    ),
+                    strong: gfonts.GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFFFF6F00), // vibrant orange
+                    ),
+                  ),
+                ),
+          const SizedBox(height: 4),
+          Text(
+            DateFormat('HH:mm').format(message.timestamp),
+            style: gfonts.GoogleFonts.poppins(
+              color: isUser
+                  ? Colors.white.withOpacity(0.7)
+                  : Colors.grey[500],
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ).animate().fadeIn(duration: 300.ms).slideX();
+}
   Widget _buildTypingIndicator() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
