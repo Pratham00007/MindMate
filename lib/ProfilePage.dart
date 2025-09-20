@@ -3,6 +3,22 @@ import 'package:google_fonts/google_fonts.dart' as gfonts;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const ProfilePage(),
+    );
+  }
+}
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -11,9 +27,33 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final TextEditingController _nameController =
-      TextEditingController(text: "Your Name");
+  String _name = "Your Name";
+  String _email = "example@email.com";
+  String _phone = "+91 9876543210";
   DateTime? _dob;
+
+  void _openEditProfile() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfilePage(
+          name: _name,
+          email: _email,
+          phone: _phone,
+          dob: _dob,
+        ),
+      ),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        _name = result["name"];
+        _email = result["email"];
+        _phone = result["phone"];
+        _dob = result["dob"];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            // Profile Header
+
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -46,92 +86,42 @@ class _ProfilePageState extends State<ProfilePage> {
                   ).animate().scale(delay: 200.ms, duration: 600.ms),
                   const SizedBox(height: 16),
 
-                  // Editable Name
-                  TextField(
-                    controller: _nameController,
-                    textAlign: TextAlign.center,
+
+                  Text(
+                    _name,
                     style: gfonts.GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Enter your name",
-                      hintStyle: gfonts.GoogleFonts.poppins(
-                        color: Colors.white.withOpacity(0.6),
-                        fontSize: 20,
-                      ),
-                    ),
                   ).animate(delay: 400.ms).fadeIn().slideY(),
 
                   const SizedBox(height: 8),
 
-                  
-                  InkWell(
-                    onTap: () async {
-                      DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: _dob ?? DateTime(2000, 1, 1),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                        builder: (context, child) {
-                          return Theme(
-                            data: Theme.of(context).copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: Color(0xFF667eea), 
-                                onPrimary: Colors.white, 
-                                onSurface: Color(0xFF333333), 
-                              ),
-                              textButtonTheme: TextButtonThemeData(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: const Color(0xFF764ba2),
-                                ),
-                              ),
-                            ),
-                            child: child!,
-                          );
-                        },
-                      );
 
-                      if (picked != null) {
-                        setState(() {
-                          _dob = picked;
-                        });
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.cake, color: Colors.white, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        _dob == null
+                            ? "DOB not set"
+                            : DateFormat("dd MMM yyyy").format(_dob!),
+                        style: gfonts.GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.cake, color: Colors.white, size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            _dob == null
-                                ? "Select Date of Birth"
-                                : DateFormat("dd MMM yyyy").format(_dob!),
-                            style: gfonts.GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ).animate(delay: 500.ms).fadeIn().slideY(),
+                    ],
+                  ),
                 ],
               ),
             ).animate().fadeIn(duration: 800.ms).slideY(),
 
             const SizedBox(height: 30),
 
-            
+
             Row(
               children: [
                 Expanded(child: _buildStatCard('Sessions', '12', Colors.blue)),
@@ -146,51 +136,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
             const SizedBox(height: 30),
 
-            
             Expanded(
               child: ListView(
                 children: [
-                  _buildMenuItem(
-                    Icons.person_outline,
-                    'Edit Profile',
-                    () {},
-                  ).animate(delay: 800.ms).slideX(),
-                  _buildMenuItem(
-                    Icons.notifications_outlined,
-                    'Notifications',
-                    () {},
-                  ).animate(delay: 900.ms).slideX(),
-                  _buildMenuItem(
-                    Icons.history,
-                    'Session History',
-                    () {},
-                  ).animate(delay: 1000.ms).slideX(),
-                  _buildMenuItem(
-                    Icons.favorite_outline,
-                    'Saved Content',
-                    () {},
-                  ).animate(delay: 1100.ms).slideX(),
-                  _buildMenuItem(
-                    Icons.settings_outlined,
-                    'Settings',
-                    () {},
-                  ).animate(delay: 1200.ms).slideX(),
-                  _buildMenuItem(
-                    Icons.help_outline,
-                    'Help & Support',
-                    () {},
-                  ).animate(delay: 1300.ms).slideX(),
-                  _buildMenuItem(
-                    Icons.privacy_tip_outlined,
-                    'Privacy Policy',
-                    () {},
-                  ).animate(delay: 1400.ms).slideX(),
-                  _buildMenuItem(
-                    Icons.logout,
-                    'Logout',
-                    () {},
-                    isLogout: true,
-                  ).animate(delay: 1500.ms).slideX(),
+                  _buildMenuItem(Icons.notifications_outlined, 'Notifications', () {}),
+                  _buildMenuItem(Icons.history, 'Session History', () {}),
+                  _buildMenuItem(Icons.favorite_outline, 'Saved Content', () {}),
+                  _buildMenuItem(Icons.settings_outlined, 'Settings', _openEditProfile),
+                  _buildMenuItem(Icons.help_outline, 'Help & Support', () {}),
+                  _buildMenuItem(Icons.privacy_tip_outlined, 'Privacy Policy', () {}),
+                  _buildMenuItem(Icons.logout, 'Logout', () {}, isLogout: true),
                 ],
               ),
             ),
@@ -275,6 +230,127 @@ class _ProfilePageState extends State<ProfilePage> {
           color: Colors.grey[400],
         ),
         onTap: onTap,
+      ),
+    );
+  }
+}
+
+// -------------------- Edit Profile Page --------------------
+
+class EditProfilePage extends StatefulWidget {
+  final String name;
+  final String email;
+  final String phone;
+  final DateTime? dob;
+
+  const EditProfilePage({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.phone,
+    this.dob,
+  });
+
+  @override
+  State<EditProfilePage> createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  DateTime? _dob;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.name);
+    _emailController = TextEditingController(text: widget.email);
+    _phoneController = TextEditingController(text: widget.phone);
+    _dob = widget.dob;
+  }
+
+  void _saveChanges() {
+    Navigator.pop(context, {
+      "name": _nameController.text,
+      "email": _emailController.text,
+      "phone": _phoneController.text,
+      "dob": _dob,
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Edit Profile"),
+        backgroundColor: const Color(0xFF667eea),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: ListView(
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: "Name",
+                prefixIcon: Icon(Icons.person),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: "Email",
+                prefixIcon: Icon(Icons.email),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: _phoneController,
+              decoration: const InputDecoration(
+                labelText: "Phone",
+                prefixIcon: Icon(Icons.phone),
+              ),
+            ),
+            const SizedBox(height: 15),
+            ListTile(
+              leading: const Icon(Icons.cake),
+              title: Text(
+                _dob == null
+                    ? "Select Date of Birth"
+                    : DateFormat("dd MMM yyyy").format(_dob!),
+              ),
+              onTap: () async {
+                DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: _dob ?? DateTime(2000, 1, 1),
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime.now(),
+                );
+                if (picked != null) {
+                  setState(() {
+                    _dob = picked;
+                  });
+                }
+              },
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton.icon(
+              onPressed: _saveChanges,
+              icon: const Icon(Icons.save),
+              label: const Text("Save"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF667eea),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
