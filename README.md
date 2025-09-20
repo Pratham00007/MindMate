@@ -83,18 +83,7 @@ dependencies:
 
 ---
 
-## 🔧 Gemini API Integration
 
-To enable real-time AI support, integrate the Gemini API by updating the `_generateResponse()` method in `ChatScreen.dart`.
-
-```dart
-// TODO: Replace this mock with actual Gemini API call
-Future<String> _generateResponse(String userMessage) async {
-  // Call Gemini API here
-}
-```
-
----
 
 ## 🇮🇳 Designed for Indian Youth
 
