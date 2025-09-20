@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart' as gfonts;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'gemini_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -17,6 +18,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _isTyping = false;
   bool _showEmojiPicker = false;
   late AnimationController _typingAnimationController;
+
+  final GeminiService _gemini = GeminiService();
 
   @override
   void initState() {
@@ -53,30 +56,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     _messageController.clear();
 
-    // Simulate AI response
-    Future.delayed(const Duration(seconds: 2), () {
+    
+    _gemini.sendMessage(text).then((reply) {
       setState(() {
         _isTyping = false;
         _messages.add(
           ChatMessage(
-            text: _generateResponse(text),
+            text: reply,
             isUser: false,
             timestamp: DateTime.now(),
           ),
         );
       });
     });
-  }
-
-  String _generateResponse(String userMessage) {
-    final responses = [
-      "I hear you, and your feelings are completely valid. Can you tell me more about what's on your mind? 🤗",
-      "That sounds challenging. Remember, it's okay to feel overwhelmed sometimes. What would help you feel better right now? 💪",
-      "Thank you for sharing that with me. You're being really brave by opening up. How long have you been feeling this way? 🌟",
-      "I understand this is difficult for you. Let's work through this together. What support do you feel you need most? 💝",
-      "Your mental health matters, and so do you. Have you tried any coping strategies that have helped you before? 🌈",
-    ];
-    return responses[DateTime.now().millisecond % responses.length];
   }
 
   @override
@@ -222,10 +214,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             Text(
               DateFormat('HH:mm').format(message.timestamp),
               style: gfonts.GoogleFonts.poppins(
-                color:
-                    message.isUser
-                        ? Colors.white.withOpacity(0.7)
-                        : Colors.grey[500],
+                color: message.isUser
+                    ? Colors.white.withOpacity(0.7)
+                    : Colors.grey[500],
                 fontSize: 12,
               ),
             ),
@@ -276,8 +267,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           child: Container(
             width: 8,
             height: 8,
-            decoration: BoxDecoration(
-              color: const Color(0xFF00BFA5),
+            decoration: const BoxDecoration(
+              color: Color(0xFF00BFA5),
               shape: BoxShape.circle,
             ),
           ),

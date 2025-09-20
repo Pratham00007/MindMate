@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart' as gfonts;
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final TextEditingController _nameController =
+      TextEditingController(text: "Your Name");
+  DateTime? _dob;
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +45,84 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ).animate().scale(delay: 200.ms, duration: 600.ms),
                   const SizedBox(height: 16),
-                  Text(
-                    'Your Name',
+
+                  // Editable Name
+                  TextField(
+                    controller: _nameController,
+                    textAlign: TextAlign.center,
                     style: gfonts.GoogleFonts.poppins(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Enter your name",
+                      hintStyle: gfonts.GoogleFonts.poppins(
+                        color: Colors.white.withOpacity(0.6),
+                        fontSize: 20,
+                      ),
+                    ),
                   ).animate(delay: 400.ms).fadeIn().slideY(),
-                  Text(
-                    'Member since Jan 2024',
-                    style: gfonts.GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.white.withOpacity(0.8),
+
+                  const SizedBox(height: 8),
+
+                  
+                  InkWell(
+                    onTap: () async {
+                      DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: _dob ?? DateTime(2000, 1, 1),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.light(
+                                primary: Color(0xFF667eea), 
+                                onPrimary: Colors.white, 
+                                onSurface: Color(0xFF333333), 
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xFF764ba2),
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+
+                      if (picked != null) {
+                        setState(() {
+                          _dob = picked;
+                        });
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.cake, color: Colors.white, size: 18),
+                          const SizedBox(width: 8),
+                          Text(
+                            _dob == null
+                                ? "Select Date of Birth"
+                                : DateFormat("dd MMM yyyy").format(_dob!),
+                            style: gfonts.GoogleFonts.poppins(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ).animate(delay: 500.ms).fadeIn().slideY(),
                 ],
@@ -56,7 +131,7 @@ class ProfilePage extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // Stats Cards
+            
             Row(
               children: [
                 Expanded(child: _buildStatCard('Sessions', '12', Colors.blue)),
@@ -71,7 +146,7 @@ class ProfilePage extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // Menu Items
+            
             Expanded(
               child: ListView(
                 children: [

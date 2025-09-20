@@ -1,11 +1,55 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart' as gfonts;
 import 'package:flutter_animate/flutter_animate.dart';
-
+import 'chat_screen.dart'; 
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
+  void _handleMoodTap(BuildContext context, String mood) {
+    if (mood == 'Sad' || mood == 'Okay') {
+    
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Feeling low? 💙"),
+          content: const Text(
+              "It seems you're not in the best mood. Want to chat with GG Assistant (your therapist bot)?"),
+          actions: [
+            TextButton(
+              child: const Text("Not now"),
+              onPressed: () => Navigator.pop(ctx),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00BFA5),
+              ),
+              child: const Text("Yes, let's talk"),
+              onPressed: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ChatScreen()),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Greet for good moods
+      final greeting = mood == 'Good'
+          ? "Nice! Keep shining today ✨"
+          : "Love that energy 😄🔥";
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(greeting),
+          backgroundColor: const Color(0xFF00BFA5),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +59,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Greeting
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -53,7 +98,7 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // Mood Check Section
+            
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -94,10 +139,10 @@ class HomePage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildMoodButton('😢', 'Sad'),
-                      _buildMoodButton('😐', 'Okay'),
-                      _buildMoodButton('😊', 'Good'),
-                      _buildMoodButton('😄', 'Great'),
+                      _buildMoodButton(context, '😢', 'Sad'),
+                      _buildMoodButton(context, '😐', 'Okay'),
+                      _buildMoodButton(context, '😊', 'Good'),
+                      _buildMoodButton(context, '😄', 'Great'),
                     ],
                   ),
                 ],
@@ -156,23 +201,27 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildMoodButton(String emoji, String label) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildMoodButton(BuildContext context, String emoji, String label) {
+    return GestureDetector(
+      onTap: () => _handleMoodTap(context, label),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(emoji, style: const TextStyle(fontSize: 24)),
           ),
-          child: Text(emoji, style: const TextStyle(fontSize: 24)),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: gfonts.GoogleFonts.poppins(fontSize: 12, color: Colors.white),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style:
+                gfonts.GoogleFonts.poppins(fontSize: 12, color: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 
