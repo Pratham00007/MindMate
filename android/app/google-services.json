@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "257492549768",
+    "project_id": "gggrid-23092",
+    "storage_bucket": "gggrid-23092.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257492549768:android:9dd516b5ee86d7a3299f3d",
+        "android_client_info": {
+          "package_name": "com.example.gcgrid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAT6Sx5cN6UZg0jMtIZAwI_JS-I4gNcrcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

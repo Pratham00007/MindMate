@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gcgrid/AppointmentPage.dart';
 import 'package:gcgrid/Chat_Screen.dart';
 import 'package:gcgrid/Community_page.dart';
 import 'package:gcgrid/ProfilePage.dart';
 import 'package:gcgrid/homepage.dart';
+import 'package:gcgrid/pages/auth/login_page.dart';
+import 'package:gcgrid/pages/auth/pin_setup_page.dart';
 import 'package:google_fonts/google_fonts.dart' as gfonts;
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
+import 'pages/services/pin_service.dart';
 
-void main() {
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const GGGridApp());
 }
 
@@ -27,12 +35,100 @@ class GGGridApp extends StatelessWidget {
         fontFamily: gfonts.GoogleFonts.poppins().fontFamily,
         scaffoldBackgroundColor: const Color(0xFFF8FFFE),
       ),
-      home: const ConnectionChecker(), // ✅ Wrapped entry
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const AuthWrapper(),
+        '/login': (context) => const LoginPage(),
+        '/main': (context) => const ConnectionChecker(),
+      },
     );
   }
 }
 
-// ✅ Internet checker wrapper
+// Authentication wrapper to check login status
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(color: Color(0xFF00BFA5)),
+            ),
+          );
+        }
+
+        if (snapshot.hasData) {
+          // User is logged in, check for PIN
+          return const PinChecker();
+        } else {
+          // User is not logged in
+          return const LoginPage();
+        }
+      },
+    );
+  }
+}
+
+// PIN checker wrapper
+class PinChecker extends StatefulWidget {
+  const PinChecker({super.key});
+
+  @override
+  State<PinChecker> createState() => _PinCheckerState();
+}
+
+class _PinCheckerState extends State<PinChecker> {
+  bool _isCheckingPin = true;
+  bool _needsPinVerification = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkPinStatus();
+  }
+
+  Future<void> _checkPinStatus() async {
+    bool pinEnabled = await PinService.isPinEnabled();
+    
+    setState(() {
+      _needsPinVerification = pinEnabled;
+      _isCheckingPin = false;
+    });
+  }
+
+  void _onPinVerified() {
+    setState(() {
+      _needsPinVerification = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isCheckingPin) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF00BFA5)),
+        ),
+      );
+    }
+
+    if (_needsPinVerification) {
+      return PinSetupPage(
+        isSetup: false,
+        onSuccess: _onPinVerified,
+      );
+    }
+
+    return const ConnectionChecker();
+  }
+}
+
+// Internet connection checker wrapper
 class ConnectionChecker extends StatefulWidget {
   const ConnectionChecker({super.key});
 
@@ -49,7 +145,7 @@ class _ConnectionCheckerState extends State<ConnectionChecker> {
     super.initState();
     _checkConnection();
 
-    // ✅ Listen for connectivity changes (handles List<ConnectivityResult>)
+    // Listen for connectivity changes
     _subscription = Connectivity().onConnectivityChanged.listen((results) {
       if (results.isNotEmpty) {
         _updateConnectionStatus(results.first);
@@ -83,14 +179,14 @@ class _ConnectionCheckerState extends State<ConnectionChecker> {
   @override
   Widget build(BuildContext context) {
     if (_isConnected) {
-      return const MainScreen(); // ✅ load your app
+      return const MainScreen();
     } else {
-      return const NoInternetScreen(); // ✅ show loading when offline
+      return const NoInternetScreen();
     }
   }
 }
 
-// ✅ Offline screen
+// Offline screen
 class NoInternetScreen extends StatelessWidget {
   const NoInternetScreen({super.key});
 

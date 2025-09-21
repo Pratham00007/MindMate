@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gcgrid/pages/services/gemini_service.dart';
 import 'package:google_fonts/google_fonts.dart' as gfonts;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'gemini_service.dart';
+
 
 import 'package:flutter_markdown/flutter_markdown.dart';
 class ChatScreen extends StatefulWidget {
